@@ -1,0 +1,14 @@
+[package]
+name = "bevy_test_scenes"
+authors = ["Dirk Becker <dirk.christian.becker@gmail.com>"]
+version = "0.1.0"
+edition = "2021"
+description = "bevy_test_scenes is a collection of simple scenes for bevy."
+license = "MIT"
+keywords = ["gamedev", "bevy", "assets", "plugins"]
+categories = ["game-development"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bevy = { git = "https://github.com/DirkChristianBecker/bevy.git" }
