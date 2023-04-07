@@ -4,3 +4,6 @@ This repository is a collection of scenes for bevy bundle into plugins. Having a
 # Example 1: Rotating shapes
 Taken from the Pan orbit camera example: https://bevy-cheatbook.github.io/cookbook/pan-orbit-camera.html
 ![Rotating shapes](rotating_shapes.png?raw=true "Rotating shapes")
+
+# Hints
+Press escape to quit.

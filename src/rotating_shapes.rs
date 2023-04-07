@@ -2,6 +2,10 @@ use bevy::{
 	prelude::*,
 	render::render_resource::{Extent3d, TextureDimension, TextureFormat},
 };
+use bevy::input::keyboard::KeyboardInput;
+use bevy::app::AppExit;
+use bevy::input::ButtonState;
+
 
 use crate::rotator::Rotator;
 
@@ -20,7 +24,27 @@ impl Plugin for RotatingShapes {
 		app.insert_resource(Rotator::default());
 		app.add_systems(Startup, setup);
 		app.add_systems(Update, rotate);
+		app.add_systems(Update, handle_keyboard);
 	}
+}
+
+/// Quit the application if the user pressed escape.
+fn handle_keyboard(
+    mut key_evr: EventReader<KeyboardInput>,
+	mut exit: EventWriter<AppExit>
+) {
+    for ev in key_evr.iter() {
+        match ev.state {
+            ButtonState::Pressed => {
+                
+            },
+            ButtonState::Released => {
+				if ev.key_code == Some(KeyCode::Escape) {
+					exit.send(AppExit);
+				} 
+			}
+        }
+    }
 }
 
 /// Spawn some shapes 
