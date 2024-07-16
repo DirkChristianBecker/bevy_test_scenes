@@ -1,6 +1,5 @@
 use bevy::{
-	prelude::*,
-	render::render_resource::{Extent3d, TextureDimension, TextureFormat},
+	math::vec2, prelude::*, render::{render_asset::RenderAssetUsages, render_resource::{Extent3d, TextureDimension, TextureFormat}}
 };
 use bevy::input::keyboard::KeyboardInput;
 use bevy::app::AppExit;
@@ -33,14 +32,14 @@ fn handle_keyboard(
     mut key_evr: EventReader<KeyboardInput>,
 	mut exit: EventWriter<AppExit>
 ) {
-    for ev in key_evr.iter() {
+    for ev in key_evr.read() {
         match ev.state {
             ButtonState::Pressed => {
                 
             },
             ButtonState::Released => {
-				if ev.key_code == Some(KeyCode::Escape) {
-					exit.send(AppExit);
+				if ev.key_code == KeyCode::Escape {
+					exit.send(AppExit::Success);
 				} 
 			}
         }
@@ -66,12 +65,12 @@ pub fn setup(
 	});
 
 	let shapes = [
-		meshes.add(shape::Cube::default().into()),
-		meshes.add(shape::Box::default().into()),
-		meshes.add(shape::Capsule::default().into()),
-		meshes.add(shape::Torus::default().into()),
-		meshes.add(shape::Cylinder::default().into()),
-		meshes.add(shape::UVSphere::default().into()),
+		meshes.add(Cuboid::default()),
+		meshes.add(Cuboid::default()),
+		meshes.add(Capsule3d::default()),
+		meshes.add(Torus::default()),
+		meshes.add(Cylinder::default()),
+		meshes.add(Sphere::default()),
 	];
 
 	let num_shapes = shapes.len();
@@ -107,13 +106,11 @@ pub fn setup(
 	// ground plane
 	commands.spawn(PbrBundle {
 		mesh: meshes.add(
-			shape::Plane {
-				size: 50.,
-				subdivisions: 1,
-			}
-			.into(),
+			Rectangle {
+				half_size: vec2(50., 50.),
+			},
 		),
-		material: materials.add(Color::SILVER.into()),
+		material: materials.add(Color::WHITE),
 		..default()
 	});
 }
@@ -132,26 +129,28 @@ fn rotate(
 fn uv_debug_texture() -> Image {
 	const TEXTURE_SIZE: usize = 8;
 
-	let mut palette: [u8; 32] = [
-		255, 102, 159, 255, 255, 159, 102, 255, 236, 255, 102, 255, 121, 255, 102, 255, 102, 255, 198, 255, 102, 198,
-		255, 255, 121, 102, 255, 255, 236, 102, 255, 255,
-	];
+    let mut palette: [u8; 32] = [
+        255, 102, 159, 255, 255, 159, 102, 255, 236, 255, 102, 255, 121, 255, 102, 255, 102, 255,
+        198, 255, 102, 198, 255, 255, 121, 102, 255, 255, 236, 102, 255, 255,
+    ];
 
-	let mut texture_data = [0; TEXTURE_SIZE * TEXTURE_SIZE * 4];
-	for y in 0..TEXTURE_SIZE {
-		let offset = TEXTURE_SIZE * y * 4;
-		texture_data[offset..(offset + TEXTURE_SIZE * 4)].copy_from_slice(&palette);
-		palette.rotate_right(4);
-	}
+    let mut texture_data = [0; TEXTURE_SIZE * TEXTURE_SIZE * 4];
+    for y in 0..TEXTURE_SIZE {
+        let offset = TEXTURE_SIZE * y * 4;
+        texture_data[offset..(offset + TEXTURE_SIZE * 4)].copy_from_slice(&palette);
+        palette.rotate_right(4);
+    }
 
-	Image::new_fill(
-		Extent3d {
-			width: TEXTURE_SIZE as u32,
-			height: TEXTURE_SIZE as u32,
-			depth_or_array_layers: 1,
-		},
-		TextureDimension::D2,
-		&texture_data,
-		TextureFormat::Rgba8UnormSrgb,
-	)
+    Image::new_fill(
+        Extent3d {
+            width: TEXTURE_SIZE as u32,
+            height: TEXTURE_SIZE as u32,
+            depth_or_array_layers: 1,
+        },
+        TextureDimension::D2,
+        &texture_data,
+        TextureFormat::Rgba8UnormSrgb,
+        RenderAssetUsages::RENDER_WORLD,
+    )
+
 }

@@ -1,9 +1,7 @@
 //! This example demonstrates how to use the rotating shapes test scene.
 extern crate bevy_test_scenes;
 
-use bevy::{
-	prelude::*,
-};
+use bevy::prelude::*;
 
 use crate::bevy_test_scenes::prelude::RotatingShapes;
 
@@ -11,7 +9,7 @@ use crate::bevy_test_scenes::prelude::RotatingShapes;
 fn main() {
 	App::new()
 		.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-		.add_plugin(RotatingShapes::default())
+		.add_plugins(RotatingShapes::default())
 		.add_systems(Startup, setup)
 		.run();
 }
