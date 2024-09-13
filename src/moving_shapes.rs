@@ -9,23 +9,22 @@ use bevy::{
 use bevy::input::keyboard::KeyboardInput;
 use bevy::app::AppExit;
 use bevy::input::ButtonState;
-use crate::rotator::Rotator;
 
-/// A marker component for our shapes so we can query them separately from the ground plane
+use crate::prelude::tools::*;
+
+/// A marker to identify our shapes
 #[derive(Component)]
 struct Shape;
 
 const X_EXTENT: f32 = 14.;
-use std::f32::consts::PI;
 
 #[derive(Component, Default)]
-pub struct RotatingShapes { }
+pub struct MovingShapes { }
 
-impl Plugin for RotatingShapes {
+impl Plugin for MovingShapes {
 	fn build(&self, app: &mut App) {
-		app.insert_resource(Rotator::default());
+        app.add_plugins(Mover::default());
 		app.add_systems(Startup, setup);
-		app.add_systems(Update, rotate);
 		app.add_systems(Update, handle_keyboard);
 	}
 }
@@ -80,7 +79,6 @@ pub fn setup(
     ];
 
 	let num_shapes = shapes.len();
-
 	for (i, shape) in shapes.into_iter().enumerate() {
 		commands.spawn((
 			PbrBundle {
@@ -90,11 +88,11 @@ pub fn setup(
 					-X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
 					2.0,
 					0.0,
-				)
-				.with_rotation(Quat::from_rotation_x(-PI / 4.)),
+				),
 				..default()
 			},
 			Shape,
+            Mover::default(),
 		));
 	}
 
@@ -117,16 +115,6 @@ pub fn setup(
         material: materials.add(Color::from(SILVER)),
         ..default()
     });
-}
-
-/// Rotate the shape using the given settings
-fn rotate(
-	mut query: Query<&mut Transform, With<Shape>>, 
-	rotator : Res<Rotator>, 
-	time: Res<Time>) {
-	for mut transform in &mut query {
-		transform.rotate_axis(rotator.axis, time.delta_seconds() * rotator.speed);
-	}
 }
 
 /// Creates a colorful test pattern

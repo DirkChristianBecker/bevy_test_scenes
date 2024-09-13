@@ -7,7 +7,7 @@ use crate::bevy_test_scenes::prelude::scenes::*;
 fn main() {
 	App::new()
 		.add_plugins(DefaultPlugins.set(ImagePlugin::default_nearest()))
-		.add_plugins(RotatingShapes::default())
+		.add_plugins(MovingShapes::default())
 		.add_systems(Startup, setup)
 		.run();
 }
