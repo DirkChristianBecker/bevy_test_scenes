@@ -20,11 +20,11 @@ fn setup(
 	let translation = Vec3::new(0.0, 6.0, 12.0);
 	let look_at = Vec3::new(0., 1., 0.);
 
-    commands.spawn((
-        Camera3dBundle {
-            transform: Transform::from_translation(translation)
-                .looking_at(look_at, Vec3::Y),
-            ..Default::default()
-        },
-    ));
+	commands.spawn(
+		(
+			Transform::from_translation(translation)
+			.looking_at(look_at, Vec3::Y),
+			Camera3d::default()
+		)
+	);
 }

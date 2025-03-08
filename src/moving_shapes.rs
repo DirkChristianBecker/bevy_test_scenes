@@ -80,41 +80,35 @@ pub fn setup(
 
 	let num_shapes = shapes.len();
 	for (i, shape) in shapes.into_iter().enumerate() {
-		commands.spawn((
-			PbrBundle {
-				mesh: shape,
-				material: debug_material.clone(),
-				transform: Transform::from_xyz(
-					-X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
-					2.0,
-					0.0,
-				),
-				..default()
-			},
-			Shape,
+        commands.spawn((
+            Mesh3d(shape),
+            MeshMaterial3d(debug_material.clone()),
             Mover::default(),
-		));
+            Shape,
+            Transform::from_xyz(
+                -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
+                2.0,
+                0.0,
+            ))
+        );
 	}
 
-	commands.spawn(PointLightBundle {
-        point_light: PointLight {
-            shadows_enabled: true,
-            intensity: 10_000_000.,
+	commands
+        .spawn(Transform::from_xyz(8.0, 16.0, 8.0))
+        .insert(PointLight{
+            intensity: 10000000.0,
             range: 100.0,
+            shadows_enabled: true,
             shadow_depth_bias: 0.2,
             ..default()
-        },
-        transform: Transform::from_xyz(8.0, 16.0, 8.0),
-        ..default()
-    });
+        });
 
 
 	// ground plane
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Plane3d::default().mesh().size(50.0, 50.0).subdivisions(10)),
-        material: materials.add(Color::from(SILVER)),
-        ..default()
-    });
+    commands.spawn((
+        Mesh3d(meshes.add(Plane3d::default().mesh().size(50.0, 50.0).subdivisions(10))),
+        MeshMaterial3d(materials.add(Color::from(SILVER))),
+    ));
 }
 
 /// Creates a colorful test pattern

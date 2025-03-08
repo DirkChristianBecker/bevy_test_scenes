@@ -82,41 +82,39 @@ pub fn setup(
 	let num_shapes = shapes.len();
 
 	for (i, shape) in shapes.into_iter().enumerate() {
-		commands.spawn((
-			PbrBundle {
-				mesh: shape,
-				material: debug_material.clone(),
-				transform: Transform::from_xyz(
-					-X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
-					2.0,
-					0.0,
-				)
-				.with_rotation(Quat::from_rotation_x(-PI / 4.)),
-				..default()
-			},
-			Shape,
-		));
+        commands.spawn((
+            Mesh3d(shape),
+            MeshMaterial3d(debug_material.clone()),
+            Transform::from_xyz(
+                -X_EXTENT / 2. + i as f32 / (num_shapes - 1) as f32 * X_EXTENT,
+                2.0,
+                0.0,
+            )
+            .with_rotation(Quat::from_rotation_x(-PI / 4.)),
+            Shape,
+        ));
+
 	}
 
-	commands.spawn(PointLightBundle {
-        point_light: PointLight {
+	commands.spawn((
+        PointLight {
             shadows_enabled: true,
             intensity: 10_000_000.,
             range: 100.0,
             shadow_depth_bias: 0.2,
             ..default()
         },
-        transform: Transform::from_xyz(8.0, 16.0, 8.0),
-        ..default()
-    });
+        Transform::from_xyz(8.0, 16.0, 8.0),
+    ));
+
 
 
 	// ground plane
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Plane3d::default().mesh().size(50.0, 50.0).subdivisions(10)),
-        material: materials.add(Color::from(SILVER)),
-        ..default()
-    });
+    commands.spawn((
+        Mesh3d(meshes.add(Plane3d::default().mesh().size(50.0, 50.0).subdivisions(10))),
+        MeshMaterial3d(materials.add(Color::from(SILVER))),
+    ));
+
 }
 
 /// Rotate the shape using the given settings
@@ -125,7 +123,7 @@ fn rotate(
 	rotator : Res<Rotator>, 
 	time: Res<Time>) {
 	for mut transform in &mut query {
-		transform.rotate_axis(rotator.axis, time.delta_seconds() * rotator.speed);
+		transform.rotate_axis(rotator.axis, time.delta().as_secs_f32() * rotator.speed);
 	}
 }
 

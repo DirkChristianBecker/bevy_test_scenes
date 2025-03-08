@@ -10,8 +10,8 @@ pub struct Mover {
 
 impl Default for Mover {
 	fn default() -> Self {
-		let mut rng = rand::thread_rng();
-    	let speed : f32 = rng.gen_range(1.0..3.0);
+		let mut rng = rand::rng();
+    	let speed : f32 = rng.random_range(1.0..3.0);
 
 		Mover {
 			speed,
@@ -31,7 +31,7 @@ fn update(
     time: Res<Time>,
     mut q_movement: Query<(&mut Transform, &mut Mover)>,
 ) {
-	let mut rng = rand::thread_rng();
+	let mut rng = rand::rng();
     for (mut transform, mut state) in &mut q_movement 
 	{
 		let state = &mut *state;
@@ -43,13 +43,13 @@ fn update(
 		}
 		state.last_distance = dist;
 		
-        let forward = transform.forward() * state.speed * time.delta_seconds();
+        let forward = transform.forward() * state.speed * time.delta().as_secs_f32();
 
     	transform.translation += forward;
-		state.last_rotation_change += time.delta_seconds();
+		state.last_rotation_change += time.delta().as_secs_f32();
 		if state.last_rotation_change > 0.25 {
 			state.last_rotation_change = 0.0;
-			transform.rotate_y(rng.gen_range(-0.25 .. 0.25));
+			transform.rotate_y(rng.random_range(-0.25 .. 0.25));
 		}
 	}
 }
